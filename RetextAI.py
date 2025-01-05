@@ -10,17 +10,17 @@ from telegram.ext import (
     filters,
     ContextTypes
 )
-""" """
+"""Модуль для запуска синхронного кода в асинхронном."""
 import nest_asyncio
-""" """
+"""Модуль для запуска асинхронного кода."""
 import asyncio
-""" """
+"""Модуль для определения языка текста."""
 from langdetect import detect, DetectorFactory
 
 nest_asyncio.apply()
 
 DetectorFactory.seed = 0
-#
+# Подключение языковой модели.
 MODEL_NAME = 'cointegrated/rut5-base-paraphraser'
 model = T5ForConditionalGeneration.from_pretrained(MODEL_NAME)
 tokenizer = T5Tokenizer.from_pretrained(MODEL_NAME)
@@ -29,7 +29,19 @@ model.eval()
 
 
 def paraphrase(text, sequences, beams=15, grams=4, do_sample=True):
-    """ """
+    """Функция для перефразирования текста.
+
+    :param text: Текст для перефразирования.
+    :type text: str
+    :param sequences: Количество вариантов перефразирования.
+    :type sequences: int
+    :param beams: Количество лучей для поиска лучшего результата.
+    :type beams: int
+    :param grams: Размер n-грамм для предотвращения повторений.
+    :type grams: int
+    :param do_sample: Флаг, включающий случайность в выбор следующего слова.
+    :type do_sample: bool
+    """
     x = tokenizer(text, return_tensors='pt', padding=True).to(model.device)
     max_size = int(x.input_ids.shape[1] * 1.5 + 10)
     out = model.generate(**x, encoder_no_repeat_ngram_size=grams,
@@ -40,7 +52,7 @@ def paraphrase(text, sequences, beams=15, grams=4, do_sample=True):
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """ """
+    """Обработка начального сообщения от пользователя в боте."""
     context.user_data.clear()
     context.user_data['state'] = 'waiting_for_text'
     await update.message.reply_text(
@@ -57,7 +69,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """ """
+    """Обработка команды help в боте."""
     await update.message.reply_text(
         "Инструкция:\n"
         "1. Отправьте текст, который вы хотите перефразировать.\n"
@@ -69,7 +81,7 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """ """
+    """Обработка входящих сообщений от пользователя в боте."""
     state = context.user_data.get('state', 'waiting_for_text')
     user_input = update.message.text
 
@@ -159,7 +171,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def main():
-    """ """
+    """Основная функция."""
     TOKEN = "7979216405:AAGWpD07_1D9isAXZoIM2TRO_h7sSHGZbFQ"
 
     application = Application.builder().token(TOKEN).build()
@@ -173,4 +185,4 @@ async def main():
     await application.run_polling()
 
 if __name__ == '__main__':
-    asyncio.run(main())
+    asyncio.run(main()) 
