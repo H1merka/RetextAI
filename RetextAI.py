@@ -16,6 +16,7 @@ import nest_asyncio
 import asyncio
 """Модуль для определения языка текста."""
 from langdetect import detect, DetectorFactory
+from api_key import key
 
 nest_asyncio.apply()
 
@@ -172,7 +173,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def main():
     """Основная функция."""
-    TOKEN = "7299791761:AAFg8tlzs__2fIT5ZJs6SPcMtcUGbCcaoA0"
+    TOKEN = key
 
     application = Application.builder().token(TOKEN).build()
 
@@ -185,4 +186,4 @@ async def main():
     await application.run_polling()
 
 if __name__ == '__main__':
-    asyncio.run(main()) 
+    asyncio.run(main())
