@@ -88,20 +88,21 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if state == 'waiting_for_text':
         # Проверка длины текста.
         if len(user_input) > 500:
-            await update.message.reply_text("""
-            Текст слишком длинный. Пожалуйста, отправьте текст до 500 символов.
-            """)
+            await update.message.reply_text(
+             "Текст слишком длинный. "
+             "Пожалуйста, отправьте текст до 500 символов."
+            )
             return
 
         # Проверка языка.
         try:
             detected_language = detect(user_input)
             if detected_language != 'ru':
-                await update.message.reply_text("""
-                Пожалуйста, отправьте текст на русском языке.
-                Мы принимаем только русский язык.
-                Пожалуйста, введите еще раз на русском языке.
-                """)
+                await update.message.reply_text(
+                 "Пожалуйста, отправьте текст на русском языке. "
+                 "Мы принимаем только русский язык. "
+                 "Пожалуйста, введите еще раз на русском языке."
+                )
                 return
         except Exception as e:
             await update.message.reply_text(f"Произошла ошибка при определении языка: {e}")
@@ -110,18 +111,18 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         # Сохранение текста и переход к состоянию запроса количества вариантов.
         context.user_data['text_to_paraphrase'] = user_input
         context.user_data['state'] = 'waiting_for_options'
-        await update.message.reply_text("""
-        Сколько вариантов перефразирования вы хотите? (до 15)
-        """)
+        await update.message.reply_text(
+         "Сколько вариантов перефразирования вы хотите? (до 15)"
+        )
 
     elif state == 'waiting_for_options':
         # Проверка, что ввод является целым числом.
         try:
             sequences = int(user_input)
             if sequences < 1 or sequences > 15:
-                await update.message.reply_text("""
-                Пожалуйста, введите число от 1 до 15.
-                """)
+                await update.message.reply_text(
+                 "Пожалуйста, введите число от 1 до 15."
+                )
                 return
 
             context.user_data['sequences'] = sequences
@@ -135,44 +136,43 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
             response = "\n\n".join(paraphrased_texts)
             await update.message.reply_text(f"Вот варианты перефразирования:\n{response}")
 
-            await update.message.reply_text("""
-            Вас устраивает результат? (Да/Нет)
-            """)
+            await update.message.reply_text(
+             "Вас устраивает результат? (Да/Нет)"
+            )
             context.user_data['paraphrased_texts'] = paraphrased_texts
         except ValueError:
-            await update.message.reply_text("""
-            Пожалуйста, введите число от 1 до 15.
-            """)
+            await update.message.reply_text(
+             "Пожалуйста, введите число от 1 до 15."
+            )
 
     elif state == 'waiting_for_feedback':
         feedback = user_input.lower()
         if feedback == "да":
-            await update.message.reply_text("""
-            Отлично! Рад, что вам понравилось.
-            Если хотите, отправьте новый текст.
-            """)
+            await update.message.reply_text(
+             "Отлично! Рад, что вам понравилось. Если хотите, отправьте новый текст."
+            )
             context.user_data.clear()
             context.user_data['state'] = 'waiting_for_text'
         elif feedback == "нет":
-            await update.message.reply_text("🔄 Попробую снова...")
+            await update.message.reply_text("Попробую снова...")
             text_to_paraphrase = context.user_data['text_to_paraphrase']
             sequences = context.user_data['sequences']
             paraphrased_texts = paraphrase(text_to_paraphrase, sequences=sequences)
 
             response = "\n\n".join(paraphrased_texts)
             await update.message.reply_text(f"Вот новые варианты перефразирования:\n{response}")
-            await update.message.reply_text("""
-            Вас устраивает результат? (Да/Нет)
-            """)
+            await update.message.reply_text(
+             "Вас устраивает результат? (Да/Нет)"
+            )
         else:
-            await update.message.reply_text("""
-            Пожалуйста, ответьте 'Да' или 'Нет'.
-            """)
+            await update.message.reply_text(
+             "Пожалуйста, ответьте 'Да' или 'Нет'."
+            )
 
 
 async def main():
     """Основная функция."""
-    TOKEN = "7979216405:AAGWpD07_1D9isAXZoIM2TRO_h7sSHGZbFQ"
+    TOKEN = "7299791761:AAFg8tlzs__2fIT5ZJs6SPcMtcUGbCcaoA0"
 
     application = Application.builder().token(TOKEN).build()
 
