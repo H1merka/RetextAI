@@ -1,4 +1,4 @@
-# recfacelib #
+# RetextAI #
 
 ## What is this? ##
 This repository is a telegram chatbot that uses artificial intelligence to paraphrase texts written in Russian.
